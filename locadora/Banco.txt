@@ -29,10 +29,10 @@ usuario VARCHAR(50) NOT NULL UNIQUE,
 senha VARCHAR(64) NOT NULL
 );
 
-
--- Dono do carro (usuario que cadastrou)
 ALTER TABLE Carro ADD COLUMN usuario VARCHAR(50);
 
-
--- Quem locou o carro
 ALTER TABLE Locacao ADD COLUMN usuario VARCHAR(50);
+
+ALTER TABLE Usuario ADD COLUMN tipo VARCHAR(10) NOT NULL DEFAULT 'cliente';
+
+INSERT IGNORE INTO Usuario (usuario, senha, tipo) VALUES ('admin', SHA2('admin', 256), 'operador');

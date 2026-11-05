@@ -14,7 +14,6 @@ import controller.UsuarioController;
 import net.miginfocom.swing.MigLayout;
 
 public class Cadastro_Usuario {
-
     private JFrame frame;
 
     private JTextField textUsuario;
@@ -26,16 +25,13 @@ public class Cadastro_Usuario {
     }
 
     private void initialize() {
-
-        // =========================================================
-        // JANELA
-        // =========================================================
-
         frame = new JFrame();
 
         frame.setTitle(
             "Locadora de Veículos - Cadastro de Usuário"
         );
+
+        frame.setIconImage(Logo.icone());
 
         frame.setSize(900, 700);
 
@@ -49,10 +45,6 @@ public class Cadastro_Usuario {
             new Color(0, 0, 160)
         );
 
-        // =========================================================
-        // LAYOUT
-        // =========================================================
-
         frame.getContentPane().setLayout(
             new MigLayout(
                 "",
@@ -60,10 +52,6 @@ public class Cadastro_Usuario {
                 "[100px][70px][55px][55px][55px][70px][70px][grow]"
             )
         );
-
-        // =========================================================
-        // TÍTULO
-        // =========================================================
 
         JLabel lblTitulo =
             new JLabel("Cadastro de Usuário");
@@ -85,9 +73,10 @@ public class Cadastro_Usuario {
             "cell 1 0 4 1,align center"
         );
 
-        // =========================================================
-        // USUÁRIO
-        // =========================================================
+        frame.getContentPane().add(
+            Logo.imagem(110, 80),
+            "cell 0 0,align center"
+        );
 
         JLabel lblUsuario =
             new JLabel("Email:");
@@ -125,10 +114,6 @@ public class Cadastro_Usuario {
             "cell 2 2 2 1,grow"
         );
 
-        // =========================================================
-        // SENHA
-        // =========================================================
-
         JLabel lblSenha =
             new JLabel("Senha:");
 
@@ -164,10 +149,6 @@ public class Cadastro_Usuario {
             textSenha,
             "cell 2 3 2 1,grow"
         );
-
-        // =========================================================
-        // CONFIRMAR SENHA
-        // =========================================================
 
         JLabel lblConfirmarSenha =
             new JLabel("Confirmar senha:");
@@ -205,10 +186,6 @@ public class Cadastro_Usuario {
             "cell 2 4 2 1,grow"
         );
 
-        // =========================================================
-        // BOTÃO LIMPAR
-        // =========================================================
-
         JButton btnLimpar =
             new JButton("Limpar");
 
@@ -239,10 +216,6 @@ public class Cadastro_Usuario {
             e -> limparCampos()
         );
 
-        // =========================================================
-        // BOTÃO CADASTRAR
-        // =========================================================
-
         JButton btnCadastrar =
             new JButton("Cadastrar");
 
@@ -272,10 +245,6 @@ public class Cadastro_Usuario {
         btnCadastrar.addActionListener(
             e -> cadastrarUsuario()
         );
-
-        // =========================================================
-        // BOTÃO VOLTAR
-        // =========================================================
 
         JButton btnVoltar =
             new JButton("Voltar para o login");
@@ -309,19 +278,10 @@ public class Cadastro_Usuario {
 
         frame.getRootPane().setDefaultButton(btnCadastrar);
 
-        // =========================================================
-        // FOCO INICIAL
-        // =========================================================
-
         textUsuario.requestFocus();
     }
 
-    // =============================================================
-    // CADASTRAR USUÁRIO
-    // =============================================================
-
     private void cadastrarUsuario() {
-
         String usuario =
             textUsuario
                 .getText()
@@ -337,12 +297,7 @@ public class Cadastro_Usuario {
                 textConfirmarSenha.getPassword()
             );
 
-        // =========================================================
-        // VALIDA USUÁRIO
-        // =========================================================
-
         if (usuario.isEmpty()) {
-
             Dialogo.mostrar(
                 frame,
                 "Informe o usuário."
@@ -353,12 +308,7 @@ public class Cadastro_Usuario {
             return;
         }
 
-        // =========================================================
-        // VALIDA SENHA
-        // =========================================================
-
         if (senha.isEmpty()) {
-
             Dialogo.mostrar(
                 frame,
                 "Informe a senha."
@@ -369,12 +319,7 @@ public class Cadastro_Usuario {
             return;
         }
 
-        // =========================================================
-        // CONFIRMA SENHA
-        // =========================================================
-
         if (confirmarSenha.isEmpty()) {
-
             Dialogo.mostrar(
                 frame,
                 "Confirme a senha."
@@ -385,12 +330,7 @@ public class Cadastro_Usuario {
             return;
         }
 
-        // =========================================================
-        // VERIFICA SE AS SENHAS SÃO IGUAIS
-        // =========================================================
-
         if (!senha.equals(confirmarSenha)) {
-
             Dialogo.mostrar(
                 frame,
                 "As senhas não são iguais."
@@ -403,25 +343,16 @@ public class Cadastro_Usuario {
             return;
         }
 
-        // =========================================================
-        // CADASTRO
-        // =========================================================
-
         try {
-
             new UsuarioController().cadastrar(usuario, senha);
-
         } catch (IllegalArgumentException e) {
-
             Dialogo.mostrar(
                 frame,
                 e.getMessage()
             );
 
             return;
-
         } catch (SQLException e) {
-
             Dialogo.mostrar(
                 frame,
                 "Erro ao acessar o banco de dados:\n"
@@ -440,12 +371,7 @@ public class Cadastro_Usuario {
         voltarParaLogin();
     }
 
-    // =============================================================
-    // VOLTAR PARA O LOGIN
-    // =============================================================
-
     private void voltarParaLogin() {
-
         Login tela =
             new Login();
 
@@ -454,53 +380,29 @@ public class Cadastro_Usuario {
         frame.dispose();
     }
 
-    // =============================================================
-    // GET FRAME
-    // =============================================================
-
     public JFrame getFrame() {
         return frame;
     }
 
-    // =============================================================
-    // GET USUÁRIO
-    // =============================================================
-
     public String getUsuario() {
-
         return textUsuario
             .getText()
             .trim();
     }
 
-    // =============================================================
-    // GET SENHA
-    // =============================================================
-
     public String getSenha() {
-
         return new String(
             textSenha.getPassword()
         );
     }
 
-    // =============================================================
-    // GET CONFIRMAR SENHA
-    // =============================================================
-
     public String getConfirmarSenha() {
-
         return new String(
             textConfirmarSenha.getPassword()
         );
     }
 
-    // =============================================================
-    // LIMPAR CAMPOS
-    // =============================================================
-
     public void limparCampos() {
-
         textUsuario.setText("");
 
         textSenha.setText("");
@@ -510,24 +412,15 @@ public class Cadastro_Usuario {
         textUsuario.requestFocus();
     }
 
-    // =============================================================
-    // MAIN
-    // =============================================================
-
     public static void main(String[] args) {
-
         java.awt.EventQueue.invokeLater(
             () -> {
-
                 try {
-
                     Cadastro_Usuario tela =
                         new Cadastro_Usuario();
 
                     tela.getFrame().setVisible(true);
-
                 } catch (Exception e) {
-
                     e.printStackTrace();
                 }
             }

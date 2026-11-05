@@ -1,14 +1,12 @@
 package model;
 
 public class Carro {
-
     private int renavam;
     private String marca;
     private String modelo;
     private int ano;
     private String placa;
 
-    // Usuário que cadastrou o carro
     private String usuario;
 
     public Carro() {
@@ -78,7 +76,6 @@ public class Carro {
     }
 
     public String validar() {
-
         if (marca == null || marca.trim().isEmpty()) {
             return "Preencha a marca do veículo.";
         }

@@ -19,7 +19,6 @@ import controller.PesquisaCarroController;
 import net.miginfocom.swing.MigLayout;
 
 public class Pesquisa_Carro {
-
     private JFrame frame;
 
     private JTextField textPesquisa;
@@ -32,35 +31,37 @@ public class Pesquisa_Carro {
 
     private String usuarioLogado;
 
-    public Pesquisa_Carro(String usuarioLogado) {
+    private boolean cliente;
 
+    public Pesquisa_Carro(String usuarioLogado) {
+        this(usuarioLogado, false);
+    }
+
+    public Pesquisa_Carro(String usuarioLogado, boolean cliente) {
         this.usuarioLogado = usuarioLogado;
+
+        this.cliente = cliente;
 
         initialize();
 
         controller = new PesquisaCarroController(this);
 
-        // Mostra todos os carros ao abrir a tela
         controller.pesquisar();
     }
 
     private void initialize() {
-
-        // =========================================================
-        // JANELA
-        // =========================================================
-
         frame = new JFrame();
 
         frame.setTitle(
             "Locadora de Veículos - Pesquisa de Carros"
         );
 
+        frame.setIconImage(Logo.icone());
+
         frame.setSize(900, 700);
 
         frame.setLocationRelativeTo(null);
 
-        // Fecha só esta janela, sem encerrar o sistema
         frame.setDefaultCloseOperation(
             JFrame.DISPOSE_ON_CLOSE
         );
@@ -69,10 +70,6 @@ public class Pesquisa_Carro {
             new Color(0, 0, 160)
         );
 
-        // =========================================================
-        // LAYOUT
-        // =========================================================
-
         frame.getContentPane().setLayout(
             new MigLayout(
                 "",
@@ -80,10 +77,6 @@ public class Pesquisa_Carro {
                 "[50px][45px][30px][grow][45px]"
             )
         );
-
-        // =========================================================
-        // TÍTULO
-        // =========================================================
 
         JLabel lblTitulo =
             new JLabel("Pesquisa de Veículos");
@@ -105,9 +98,10 @@ public class Pesquisa_Carro {
             "cell 1 0 4 1,align center"
         );
 
-        // =========================================================
-        // CAMPO DE PESQUISA
-        // =========================================================
+        frame.getContentPane().add(
+            Logo.imagem(68, 50),
+            "cell 0 0,align center"
+        );
 
         JLabel lblPesquisa =
             new JLabel("Pesquisar:");
@@ -149,10 +143,8 @@ public class Pesquisa_Carro {
             "cell 1 1 4 1,grow"
         );
 
-        // Pesquisa automaticamente enquanto o usuário digita
         textPesquisa.getDocument().addDocumentListener(
             new DocumentListener() {
-
                 public void insertUpdate(DocumentEvent e) {
                     controller.pesquisar();
                 }
@@ -166,10 +158,6 @@ public class Pesquisa_Carro {
                 }
             }
         );
-
-        // =========================================================
-        // BOTÃO LIMPAR PESQUISA
-        // =========================================================
 
         JButton btnLimpar =
             new JButton("Limpar");
@@ -204,10 +192,6 @@ public class Pesquisa_Carro {
             }
         );
 
-        // =========================================================
-        // DICA
-        // =========================================================
-
         JLabel lblDica =
             new JLabel(
                 "Pesquise por RENAVAM, marca, modelo, ano, placa ou usuário. "
@@ -231,10 +215,6 @@ public class Pesquisa_Carro {
             "cell 1 2 4 1"
         );
 
-        // =========================================================
-        // TABELA
-        // =========================================================
-
         DefaultTableModel modeloTabela =
             new DefaultTableModel(
                 new Object[][] {},
@@ -247,8 +227,6 @@ public class Pesquisa_Carro {
                     "Cadastrado por"
                 }
             ) {
-
-                // Tabela somente para consulta
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
@@ -276,13 +254,10 @@ public class Pesquisa_Carro {
             )
         );
 
-        // Clicar em um carro oferece a opção de locar
         table.addMouseListener(
             new MouseAdapter() {
-
                 @Override
                 public void mouseClicked(MouseEvent e) {
-
                     int linha = table.rowAtPoint(e.getPoint());
 
                     if (linha >= 0) {
@@ -299,10 +274,6 @@ public class Pesquisa_Carro {
             scrollPane,
             "cell 0 3 6 1,grow"
         );
-
-        // =========================================================
-        // TOTAL ENCONTRADO
-        // =========================================================
 
         lblTotal =
             new JLabel();
@@ -321,12 +292,28 @@ public class Pesquisa_Carro {
 
         frame.getContentPane().add(
             lblTotal,
-            "cell 0 4 4 1"
+            "cell 0 4 2 1"
         );
 
-        // =========================================================
-        // BOTÃO FECHAR
-        // =========================================================
+        JButton btnMeusCarros =
+            new JButton("Meus carros locados");
+
+        btnMeusCarros.setBackground(Color.YELLOW);
+
+        btnMeusCarros.setForeground(Color.BLACK);
+
+        btnMeusCarros.setFont(new Font("Arial", Font.BOLD, 14));
+
+        btnMeusCarros.setFocusPainted(false);
+
+        frame.getContentPane().add(
+            btnMeusCarros,
+            "cell 2 4 2 1,grow"
+        );
+
+        btnMeusCarros.addActionListener(
+            e -> new Meus_Carros(frame, usuarioLogado).getDialog().setVisible(true)
+        );
 
         JButton btnFechar =
             new JButton("Voltar");
@@ -354,23 +341,26 @@ public class Pesquisa_Carro {
             "cell 4 4 2 1,grow"
         );
 
-        btnFechar.addActionListener(
-            e -> frame.dispose()
-        );
+        btnFechar.addActionListener(e -> {
+            if (cliente) {
+                new Login().getFrame().setVisible(true);
+            }
+
+            frame.dispose();
+        });
+
+        if (cliente) {
+            btnFechar.setText("Sair (" + usuarioLogado + ")");
+
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        }
     }
 
-    // =============================================================
-    // PERGUNTAR SE DESEJA LOCAR O CARRO CLICADO
-    // =============================================================
-
     private void perguntarLocacao(int linha) {
-
         Object dono =
             table.getValueAt(linha, 5);
 
-        // Ninguém pode locar o próprio carro
         if (dono != null && dono.toString().equalsIgnoreCase(usuarioLogado)) {
-
             Dialogo.mostrar(
                 frame,
                 "Você não pode locar um carro que você mesmo cadastrou."
@@ -394,7 +384,6 @@ public class Pesquisa_Carro {
         );
 
         if (locar) {
-
             Locacao_Carro tela =
                 new Locacao_Carro(
                     frame,
@@ -405,44 +394,25 @@ public class Pesquisa_Carro {
 
             tela.getDialog().setVisible(true);
 
-            // Atualiza a lista: o carro locado deixa de aparecer
             controller.pesquisar();
         }
     }
-
-    // =============================================================
-    // GET FRAME
-    // =============================================================
 
     public JFrame getFrame() {
         return frame;
     }
 
-    // =============================================================
-    // GET TERMO PESQUISADO
-    // =============================================================
-
     public String getTermo() {
-
         return textPesquisa
             .getText()
             .trim();
     }
 
-    // =============================================================
-    // GET TABLE
-    // =============================================================
-
     public JTable getTable() {
         return table;
     }
 
-    // =============================================================
-    // MOSTRAR TOTAL
-    // =============================================================
-
     public void mostrarTotal(int total) {
-
         lblTotal.setText(
             total == 1
                 ? "1 carro encontrado"
@@ -450,14 +420,9 @@ public class Pesquisa_Carro {
         );
     }
 
-    // =============================================================
-    // MOSTRAR MENSAGEM
-    // =============================================================
-
     public void mostrarMensagem(
         String mensagem
     ) {
-
         Dialogo.mostrar(
             frame,
             mensagem

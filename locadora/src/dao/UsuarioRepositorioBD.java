@@ -12,18 +12,16 @@ import java.sql.Statement;
 import model.Usuario;
 
 public class UsuarioRepositorioBD {
-
     public UsuarioRepositorioBD() throws SQLException {
         criarTabela();
     }
 
-    // Garante que a tabela Usuario exista no banco
     private void criarTabela() throws SQLException {
-
         String sql = "CREATE TABLE IF NOT EXISTS Usuario ("
                    + " id INT PRIMARY KEY AUTO_INCREMENT,"
                    + " usuario VARCHAR(50) NOT NULL UNIQUE,"
-                   + " senha VARCHAR(64) NOT NULL"
+                   + " senha VARCHAR(64) NOT NULL,"
+                   + " tipo VARCHAR(10) NOT NULL DEFAULT 'cliente'"
                    + ")";
 
         try (
@@ -31,11 +29,41 @@ public class UsuarioRepositorioBD {
             Statement statement = connection.createStatement()
         ) {
             statement.execute(sql);
+
+            try {
+                statement.execute(
+                    "ALTER TABLE Usuario ADD COLUMN tipo VARCHAR(10) NOT NULL DEFAULT 'cliente'"
+                );
+            } catch (SQLException e) {
+            }
+
+            statement.execute(
+                "INSERT IGNORE INTO Usuario (usuario, senha, tipo) VALUES ('admin', '"
+                + gerarHash("admin") + "', 'operador')"
+            );
+        }
+    }
+
+    public String buscarTipo(String usuario) throws SQLException {
+        String sql = "SELECT tipo FROM Usuario WHERE usuario = ?";
+
+        try (
+            Connection connection = ConnectionFactory.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, usuario.trim());
+
+            try (ResultSet result = statement.executeQuery()) {
+                if (result.next()) {
+                    return result.getString("tipo");
+                }
+
+                return "cliente";
+            }
         }
     }
 
     public void salvar(Usuario usuario) throws SQLException {
-
         String erro = usuario.validar();
 
         if (erro != null) {
@@ -54,7 +82,6 @@ public class UsuarioRepositorioBD {
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setString(1, usuario.getUsuario().trim());
             statement.setString(2, gerarHash(usuario.getSenha()));
 
@@ -63,14 +90,12 @@ public class UsuarioRepositorioBD {
     }
 
     public boolean existe(String usuario) throws SQLException {
-
         String sql = "SELECT id FROM Usuario WHERE usuario = ?";
 
         try (
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setString(1, usuario.trim());
 
             try (ResultSet result = statement.executeQuery()) {
@@ -79,20 +104,16 @@ public class UsuarioRepositorioBD {
         }
     }
 
-    // Retorna true se o usuário e a senha conferem
     public boolean autenticar(String usuario, String senha) throws SQLException {
-
         String sql = "SELECT senha FROM Usuario WHERE usuario = ?";
 
         try (
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setString(1, usuario.trim());
 
             try (ResultSet result = statement.executeQuery()) {
-
                 if (!result.next()) {
                     return false;
                 }
@@ -102,11 +123,8 @@ public class UsuarioRepositorioBD {
         }
     }
 
-    // A senha é guardada no banco como hash SHA-256, nunca em texto puro
     private String gerarHash(String senha) {
-
         try {
-
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
             byte[] bytes = digest.digest(
@@ -120,7 +138,6 @@ public class UsuarioRepositorioBD {
             }
 
             return hex.toString();
-
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
         }

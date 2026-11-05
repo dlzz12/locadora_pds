@@ -14,7 +14,6 @@ import controller.UsuarioController;
 import net.miginfocom.swing.MigLayout;
 
 public class Login {
-
     private JFrame frame;
 
     private JTextField textUsuario;
@@ -25,16 +24,13 @@ public class Login {
     }
 
     private void initialize() {
-
-        // =========================================================
-        // JANELA
-        // =========================================================
-
         frame = new JFrame();
 
         frame.setTitle(
             "Locadora de Veículos - Login"
         );
+
+        frame.setIconImage(Logo.icone());
 
         frame.setSize(900, 700);
 
@@ -48,45 +44,20 @@ public class Login {
             new Color(0, 0, 160)
         );
 
-        // =========================================================
-        // LAYOUT
-        // =========================================================
-
         frame.getContentPane().setLayout(
             new MigLayout(
                 "",
                 "[110px][grow][grow][grow][110px][110px]",
-                "[100px][70px][55px][55px][70px][70px][grow]"
+                "[200px][70px][55px][55px][70px][70px][grow]"
             )
         );
 
-        // =========================================================
-        // TÍTULO
-        // =========================================================
-
-        JLabel lblTitulo =
-            new JLabel("Locadora de Veículos");
-
-        lblTitulo.setForeground(
-            Color.YELLOW
-        );
-
-        lblTitulo.setFont(
-            new Font(
-                "Arial",
-                Font.BOLD | Font.ITALIC,
-                28
-            )
-        );
+        JLabel lblLogo = Logo.imagem(260, 190);
 
         frame.getContentPane().add(
-            lblTitulo,
+            lblLogo,
             "cell 1 0 4 1,align center"
         );
-
-        // =========================================================
-        // SUBTÍTULO
-        // =========================================================
 
         JLabel lblLogin =
             new JLabel("Login");
@@ -107,10 +78,6 @@ public class Login {
             lblLogin,
             "cell 1 1 4 1,align center"
         );
-
-        // =========================================================
-        // USUÁRIO
-        // =========================================================
 
         JLabel lblUsuario =
             new JLabel("Usuário:");
@@ -148,10 +115,6 @@ public class Login {
             "cell 2 2 2 1,grow"
         );
 
-        // =========================================================
-        // SENHA
-        // =========================================================
-
         JLabel lblSenha =
             new JLabel("Senha:");
 
@@ -188,10 +151,6 @@ public class Login {
             "cell 2 3 2 1,grow"
         );
 
-        // =========================================================
-        // BOTÃO ENTRAR
-        // =========================================================
-
         JButton btnEntrar =
             new JButton("Entrar");
 
@@ -221,10 +180,6 @@ public class Login {
         btnEntrar.addActionListener(
             e -> realizarLogin()
         );
-
-        // =========================================================
-        // BOTÃO CADASTRAR NOVO USUÁRIO
-        // =========================================================
 
         JButton btnCadastrar =
             new JButton("Cadastrar novo usuário");
@@ -256,22 +211,12 @@ public class Login {
             e -> cadastrarNovoUsuario()
         );
 
-        // Tecla Enter aciona o botão Entrar
         frame.getRootPane().setDefaultButton(btnEntrar);
-
-        // =========================================================
-        // FOCO INICIAL
-        // =========================================================
 
         textUsuario.requestFocus();
     }
 
-    // =============================================================
-    // REALIZAR LOGIN
-    // =============================================================
-
     private void realizarLogin() {
-
         String usuario =
             textUsuario.getText().trim();
 
@@ -281,7 +226,6 @@ public class Login {
             );
 
         if (usuario.isEmpty()) {
-
             Dialogo.mostrar(
                 frame,
                 "Informe o usuário."
@@ -293,7 +237,6 @@ public class Login {
         }
 
         if (senha.isEmpty()) {
-
             Dialogo.mostrar(
                 frame,
                 "Informe a senha."
@@ -305,13 +248,10 @@ public class Login {
         }
 
         try {
-
             UsuarioController controller =
                 new UsuarioController();
 
-            // Usuário ainda não cadastrado: pede para se cadastrar
             if (!controller.usuarioExiste(usuario)) {
-
                 boolean cadastrar = Dialogo.confirmar(
                     frame,
                     "Usuário não encontrado.\n"
@@ -328,7 +268,6 @@ public class Login {
             }
 
             if (!controller.autenticar(usuario, senha)) {
-
                 Dialogo.mostrar(
                     frame,
                     "Senha incorreta."
@@ -341,16 +280,20 @@ public class Login {
                 return;
             }
 
-            // Login correto: abre o sistema
-            Cadastro_Carro tela =
-                new Cadastro_Carro(usuario);
+            if (controller.ehOperador(usuario)) {
+                Cadastro_Carro tela =
+                    new Cadastro_Carro(usuario);
 
-            tela.getFrame().setVisible(true);
+                tela.getFrame().setVisible(true);
+            } else {
+                Pesquisa_Carro tela =
+                    new Pesquisa_Carro(usuario, true);
+
+                tela.getFrame().setVisible(true);
+            }
 
             frame.dispose();
-
         } catch (SQLException e) {
-
             Dialogo.mostrar(
                 frame,
                 "Erro ao acessar o banco de dados:\n"
@@ -359,12 +302,7 @@ public class Login {
         }
     }
 
-    // =============================================================
-    // CADASTRAR NOVO USUÁRIO
-    // =============================================================
-
     private void cadastrarNovoUsuario() {
-
         Cadastro_Usuario tela =
             new Cadastro_Usuario();
 
@@ -373,17 +311,9 @@ public class Login {
         frame.dispose();
     }
 
-    // =============================================================
-    // GET FRAME
-    // =============================================================
-
     public JFrame getFrame() {
         return frame;
     }
-
-    // =============================================================
-    // GET USUÁRIO
-    // =============================================================
 
     public String getUsuario() {
         return textUsuario
@@ -391,22 +321,13 @@ public class Login {
             .trim();
     }
 
-    // =============================================================
-    // GET SENHA
-    // =============================================================
-
     public String getSenha() {
         return new String(
             textSenha.getPassword()
         );
     }
 
-    // =============================================================
-    // LIMPAR CAMPOS
-    // =============================================================
-
     public void limparCampos() {
-
         textUsuario.setText("");
 
         textSenha.setText("");
@@ -414,24 +335,15 @@ public class Login {
         textUsuario.requestFocus();
     }
 
-    // =============================================================
-    // MAIN
-    // =============================================================
-
     public static void main(String[] args) {
-
         java.awt.EventQueue.invokeLater(
             () -> {
-
                 try {
-
                     Login tela =
                         new Login();
 
                     tela.getFrame().setVisible(true);
-
                 } catch (Exception e) {
-
                     e.printStackTrace();
                 }
             }

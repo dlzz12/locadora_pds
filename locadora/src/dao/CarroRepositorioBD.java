@@ -11,19 +11,12 @@ import java.util.List;
 import model.Carro;
 
 public class CarroRepositorioBD {
-
     private static final String COLUNAS =
         "renavam, marca, modelo, ano, placa, usuario";
 
-    // Evita verificar a estrutura da tabela mais de uma vez
     private static boolean colunaUsuarioVerificada = false;
 
-    // =========================================================
-    // GARANTE A COLUNA "usuario" (DONO DO CARRO) NA TABELA Carro
-    // =========================================================
-
     private static synchronized void garantirColunaUsuario() throws SQLException {
-
         if (colunaUsuarioVerificada) {
             return;
         }
@@ -38,7 +31,6 @@ public class CarroRepositorioBD {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql)
         ) {
-
             result.next();
 
             if (result.getInt(1) == 0) {
@@ -51,12 +43,7 @@ public class CarroRepositorioBD {
         colunaUsuarioVerificada = true;
     }
 
-    // =========================================================
-    // SALVAR
-    // =========================================================
-
     public void salvar(Carro carro) throws SQLException {
-
         garantirColunaUsuario();
 
         String erro = carro.validar();
@@ -78,7 +65,6 @@ public class CarroRepositorioBD {
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setInt(1, carro.getRenavam());
             statement.setString(2, carro.getMarca());
             statement.setString(3, carro.getModelo());
@@ -91,7 +77,6 @@ public class CarroRepositorioBD {
     }
 
     public boolean existe(String placa) throws SQLException {
-
         if (placa == null || placa.trim().isEmpty()) {
             return false;
         }
@@ -102,7 +87,6 @@ public class CarroRepositorioBD {
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setString(1, placa);
 
             try (ResultSet result = statement.executeQuery()) {
@@ -111,18 +95,11 @@ public class CarroRepositorioBD {
         }
     }
 
-    // Carro locado = tem locação em andamento ou agendada
-    // (que ainda não terminou)
     private static final String NAO_LOCADO =
         "NOT EXISTS (SELECT 1 FROM Locacao l "
         + "WHERE l.renavam = Carro.renavam AND l.dataTermino >= CURDATE())";
 
-    // =========================================================
-    // LISTAR CARROS DISPONÍVEIS (USADO NA TELA DE PESQUISA)
-    // =========================================================
-
     public List<Carro> listarDisponiveis() throws SQLException {
-
         garantirColunaUsuario();
 
         String sql = "SELECT " + COLUNAS + " FROM Carro "
@@ -137,13 +114,7 @@ public class CarroRepositorioBD {
         }
     }
 
-    // =========================================================
-    // LISTAR SOMENTE OS CARROS DE UM USUÁRIO
-    // (USADO NA TELA DE CADASTRO)
-    // =========================================================
-
     public List<Carro> listarPorUsuario(String usuario) throws SQLException {
-
         garantirColunaUsuario();
 
         String sql = "SELECT " + COLUNAS + " FROM Carro "
@@ -153,21 +124,13 @@ public class CarroRepositorioBD {
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setString(1, usuario);
 
             return lerCarros(statement);
         }
     }
 
-    // =========================================================
-    // PESQUISAR NOS CARROS DISPONÍVEIS
-    // =========================================================
-
-    // Busca carros não locados cujo RENAVAM, marca, modelo, ano,
-    // placa ou usuário que cadastrou contenham o termo
     public List<Carro> pesquisarDisponiveis(String termo) throws SQLException {
-
         garantirColunaUsuario();
 
         String sql = "SELECT " + COLUNAS + " FROM Carro "
@@ -186,7 +149,6 @@ public class CarroRepositorioBD {
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             for (int i = 1; i <= 6; i++) {
                 statement.setString(i, filtro);
             }
@@ -196,7 +158,6 @@ public class CarroRepositorioBD {
     }
 
     public int contar() throws SQLException {
-
         String sql = "SELECT COUNT(*) FROM Carro";
 
         try (
@@ -204,7 +165,6 @@ public class CarroRepositorioBD {
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet result = statement.executeQuery()
         ) {
-
             if (result.next()) {
                 return result.getInt(1);
             }
@@ -213,18 +173,11 @@ public class CarroRepositorioBD {
         return 0;
     }
 
-    // =========================================================
-    // TRANSFORMA AS LINHAS DO BANCO EM OBJETOS Carro
-    // =========================================================
-
     private List<Carro> lerCarros(PreparedStatement statement) throws SQLException {
-
         List<Carro> carros = new ArrayList<>();
 
         try (ResultSet result = statement.executeQuery()) {
-
             while (result.next()) {
-
                 Carro carro = new Carro(
                     result.getInt("renavam"),
                     result.getString("marca"),

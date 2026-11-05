@@ -18,7 +18,6 @@ import controller.CarroController;
 import net.miginfocom.swing.MigLayout;
 
 public class Cadastro_Carro {
-
     private JFrame frame;
 
     private JFormattedTextField textRenavam;
@@ -34,28 +33,23 @@ public class Cadastro_Carro {
     private String usuarioLogado;
 
     public Cadastro_Carro(String usuarioLogado) {
-
         this.usuarioLogado = usuarioLogado;
 
         initialize();
 
         controller = new CarroController(this);
 
-        // Carrega os carros ao abrir a tela
         controller.listar();
     }
 
     private void initialize() {
-
-        // =========================================================
-        // JANELA
-        // =========================================================
-
         frame = new JFrame();
 
         frame.setTitle(
             "Locadora de Veículos - Cadastro de Carro"
         );
+
+        frame.setIconImage(Logo.icone());
 
         frame.setSize(900, 700);
 
@@ -69,10 +63,6 @@ public class Cadastro_Carro {
             new Color(0, 0, 160)
         );
 
-        // =========================================================
-        // LAYOUT
-        // =========================================================
-
         frame.getContentPane().setLayout(
             new MigLayout(
                 "",
@@ -80,10 +70,6 @@ public class Cadastro_Carro {
                 "[50px][45px][45px][45px][45px][45px][55px][grow]"
             )
         );
-
-        // =========================================================
-        // TÍTULO
-        // =========================================================
 
         JLabel lblTitulo =
             new JLabel("Cadastro de Veículo");
@@ -105,9 +91,10 @@ public class Cadastro_Carro {
             "cell 1 0 4 1,align center"
         );
 
-        // =========================================================
-        // BOTÃO SAIR (LOGOUT)
-        // =========================================================
+        frame.getContentPane().add(
+            Logo.imagem(68, 50),
+            "cell 0 0,align center"
+        );
 
         JButton btnSair =
             new JButton("Sair (" + usuarioLogado + ")");
@@ -139,10 +126,6 @@ public class Cadastro_Carro {
             e -> sair()
         );
 
-        // =========================================================
-        // RENAVAM
-        // =========================================================
-
         JLabel lblRenavam =
             new JLabel("RENAVAM:");
 
@@ -164,18 +147,6 @@ public class Cadastro_Carro {
         );
 
         try {
-
-            /*
-             * RENAVAM
-             *
-             * 9 números (a coluna renavam do banco é INT,
-             * que aceita no máximo 2.147.483.647)
-             *
-             * Aparece:
-             *
-             * _________
-             */
-
             MaskFormatter mascaraRenavam =
                 new MaskFormatter("#########");
 
@@ -195,9 +166,7 @@ public class Cadastro_Carro {
                     16
                 )
             );
-
         } catch (ParseException e) {
-
             e.printStackTrace();
 
             textRenavam =
@@ -208,10 +177,6 @@ public class Cadastro_Carro {
             textRenavam,
             "cell 1 1 4 1,grow"
         );
-
-        // =========================================================
-        // MARCA
-        // =========================================================
 
         JLabel lblMarca =
             new JLabel("Marca:");
@@ -249,10 +214,6 @@ public class Cadastro_Carro {
             "cell 1 2 4 1,grow"
         );
 
-        // =========================================================
-        // MODELO
-        // =========================================================
-
         JLabel lblModelo =
             new JLabel("Modelo:");
 
@@ -289,10 +250,6 @@ public class Cadastro_Carro {
             "cell 1 3 4 1,grow"
         );
 
-        // =========================================================
-        // ANO
-        // =========================================================
-
         JLabel lblAno =
             new JLabel("Ano:");
 
@@ -314,17 +271,6 @@ public class Cadastro_Carro {
         );
 
         try {
-
-            /*
-             * ANO
-             *
-             * 4 números
-             *
-             * Aparece:
-             *
-             * ____
-             */
-
             MaskFormatter mascaraAno =
                 new MaskFormatter("####");
 
@@ -344,9 +290,7 @@ public class Cadastro_Carro {
                     16
                 )
             );
-
         } catch (ParseException e) {
-
             e.printStackTrace();
 
             textAno =
@@ -357,10 +301,6 @@ public class Cadastro_Carro {
             textAno,
             "cell 1 4 4 1,grow"
         );
-
-        // =========================================================
-        // PLACA
-        // =========================================================
 
         JLabel lblPlaca =
             new JLabel("Placa:");
@@ -383,25 +323,6 @@ public class Cadastro_Carro {
         );
 
         try {
-
-            /*
-             * PLACA
-             *
-             * Máscara visual:
-             *
-             * ___-____
-             *
-             * Exemplo:
-             *
-             * ABC-1234
-             *
-             * Os 7 caracteres reais são:
-             *
-             * ABC1234
-             *
-             * O hífen é somente visual.
-             */
-
             MaskFormatter mascaraPlaca =
                 new MaskFormatter("UUU-####");
 
@@ -421,9 +342,7 @@ public class Cadastro_Carro {
                     16
                 )
             );
-
         } catch (ParseException e) {
-
             e.printStackTrace();
 
             textPlaca =
@@ -434,10 +353,6 @@ public class Cadastro_Carro {
             textPlaca,
             "cell 1 5 4 1,grow"
         );
-
-        // =========================================================
-        // BOTÃO LIMPAR
-        // =========================================================
 
         JButton btnLimpar =
             new JButton("Limpar");
@@ -469,10 +384,6 @@ public class Cadastro_Carro {
             e -> limparCampos()
         );
 
-        // =========================================================
-        // BOTÃO CADASTRAR
-        // =========================================================
-
         JButton btnCadastrar =
             new JButton("Cadastrar");
 
@@ -503,10 +414,6 @@ public class Cadastro_Carro {
             e -> controller.cadastrar()
         );
 
-        // =========================================================
-        // BOTÃO PESQUISAR
-        // =========================================================
-
         JButton btnPesquisar =
             new JButton("Pesquisar");
 
@@ -536,10 +443,6 @@ public class Cadastro_Carro {
         btnPesquisar.addActionListener(
             e -> abrirPesquisa()
         );
-
-        // =========================================================
-        // TABELA
-        // =========================================================
 
         DefaultTableModel modeloTabela =
             new DefaultTableModel(
@@ -583,64 +486,32 @@ public class Cadastro_Carro {
         );
     }
 
-    // =============================================================
-    // GET FRAME
-    // =============================================================
-
     public JFrame getFrame() {
         return frame;
     }
 
-    // =============================================================
-    // GET RENAVAM
-    // =============================================================
-
     public String getRenavam() {
-
         String valor =
             textRenavam.getText();
-
-        /*
-         * Remove qualquer caractere que não seja número.
-         *
-         * Exemplo:
-         *
-         * 123456789
-         */
 
         return valor
             .replaceAll("[^0-9]", "")
             .trim();
     }
 
-    // =============================================================
-    // GET MARCA
-    // =============================================================
-
     public String getMarca() {
-
         return textMarca
             .getText()
             .trim();
     }
 
-    // =============================================================
-    // GET MODELO
-    // =============================================================
-
     public String getModelo() {
-
         return textModelo
             .getText()
             .trim();
     }
 
-    // =============================================================
-    // GET ANO
-    // =============================================================
-
     public String getAno() {
-
         String valor =
             textAno.getText();
 
@@ -649,23 +520,9 @@ public class Cadastro_Carro {
             .trim();
     }
 
-    // =============================================================
-    // GET PLACA
-    // =============================================================
-
     public String getPlaca() {
-
         String placa =
             textPlaca.getText();
-
-        /*
-         * Remove:
-         *
-         * -
-         * _
-         *
-         * deixando somente os 7 caracteres.
-         */
 
         return placa
             .replace("-", "")
@@ -674,28 +531,15 @@ public class Cadastro_Carro {
             .toUpperCase();
     }
 
-    // =============================================================
-    // GET USUÁRIO LOGADO
-    // =============================================================
-
     public String getUsuarioLogado() {
         return usuarioLogado;
     }
-
-    // =============================================================
-    // GET TABLE
-    // =============================================================
 
     public JTable getTable() {
         return table;
     }
 
-    // =============================================================
-    // LIMPAR CAMPOS
-    // =============================================================
-
     public void limparCampos() {
-
         textRenavam.setValue(null);
 
         textMarca.setText("");
@@ -709,24 +553,14 @@ public class Cadastro_Carro {
         textRenavam.requestFocus();
     }
 
-    // =============================================================
-    // ABRIR PESQUISA DE CARROS
-    // =============================================================
-
     private void abrirPesquisa() {
-
         Pesquisa_Carro tela =
             new Pesquisa_Carro(usuarioLogado);
 
         tela.getFrame().setVisible(true);
     }
 
-    // =============================================================
-    // SAIR (VOLTA PARA O LOGIN)
-    // =============================================================
-
     private void sair() {
-
         Login tela =
             new Login();
 
@@ -735,14 +569,9 @@ public class Cadastro_Carro {
         frame.dispose();
     }
 
-    // =============================================================
-    // MOSTRAR MENSAGEM
-    // =============================================================
-
     public void mostrarMensagem(
         String mensagem
     ) {
-
         Dialogo.mostrar(
             frame,
             mensagem

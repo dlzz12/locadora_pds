@@ -13,19 +13,12 @@ import java.util.List;
 import model.Locacao;
 
 public class LocacaoRepositorioBD {
-
     private static final DateTimeFormatter FORMATO =
         DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    // Evita verificar a estrutura da tabela mais de uma vez
     private static boolean colunaUsuarioVerificada = false;
 
-    // =========================================================
-    // GARANTE A COLUNA "usuario" (QUEM LOCOU) NA TABELA Locacao
-    // =========================================================
-
     private static synchronized void garantirColunaUsuario() throws SQLException {
-
         if (colunaUsuarioVerificada) {
             return;
         }
@@ -40,7 +33,6 @@ public class LocacaoRepositorioBD {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql)
         ) {
-
             result.next();
 
             if (result.getInt(1) == 0) {
@@ -53,12 +45,7 @@ public class LocacaoRepositorioBD {
         colunaUsuarioVerificada = true;
     }
 
-    // =========================================================
-    // SALVAR
-    // =========================================================
-
     public void salvar(Locacao locacao) throws SQLException {
-
         garantirColunaUsuario();
 
         String erro = locacao.validar();
@@ -94,7 +81,6 @@ public class LocacaoRepositorioBD {
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setDate(1, Date.valueOf(locacao.getDataInicio()));
             statement.setDate(2, Date.valueOf(locacao.getDataTermino()));
             statement.setInt(3, locacao.getRenavam());
@@ -104,12 +90,7 @@ public class LocacaoRepositorioBD {
         }
     }
 
-    // =========================================================
-    // LOCAÇÃO EM ANDAMENTO OU AGENDADA DO CARRO (SE HOUVER)
-    // =========================================================
-
     private Locacao buscarLocacaoAtiva(int renavam) throws SQLException {
-
         String sql = "SELECT dataInicio, dataTermino, renavam, usuario FROM Locacao "
                    + "WHERE renavam = ? AND dataTermino >= CURDATE() "
                    + "ORDER BY dataInicio LIMIT 1";
@@ -118,7 +99,6 @@ public class LocacaoRepositorioBD {
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setInt(1, renavam);
 
             List<Locacao> locacoes = lerLocacoes(statement);
@@ -127,19 +107,13 @@ public class LocacaoRepositorioBD {
         }
     }
 
-    // =========================================================
-    // USUÁRIO QUE CADASTROU O CARRO
-    // =========================================================
-
     private String buscarDono(int renavam) throws SQLException {
-
         String sql = "SELECT usuario FROM Carro WHERE renavam = ?";
 
         try (
             Connection connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setInt(1, renavam);
 
             try (ResultSet result = statement.executeQuery()) {
@@ -148,18 +122,42 @@ public class LocacaoRepositorioBD {
         }
     }
 
-    // =========================================================
-    // TRANSFORMA AS LINHAS DO BANCO EM OBJETOS Locacao
-    // =========================================================
+    public List<String[]> listarDoUsuario(String usuario) throws SQLException {
+        garantirColunaUsuario();
+
+        String sql = "SELECT c.marca, c.modelo, c.placa, l.dataInicio, l.dataTermino "
+                   + "FROM Locacao l JOIN Carro c ON c.renavam = l.renavam "
+                   + "WHERE l.usuario = ? ORDER BY l.dataInicio";
+
+        List<String[]> lista = new ArrayList<>();
+
+        try (
+            Connection connection = ConnectionFactory.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, usuario);
+
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    lista.add(new String[] {
+                        result.getString("marca"),
+                        result.getString("modelo"),
+                        result.getString("placa"),
+                        result.getDate("dataInicio").toLocalDate().format(FORMATO),
+                        result.getDate("dataTermino").toLocalDate().format(FORMATO)
+                    });
+                }
+            }
+        }
+
+        return lista;
+    }
 
     private List<Locacao> lerLocacoes(PreparedStatement statement) throws SQLException {
-
         List<Locacao> locacoes = new ArrayList<>();
 
         try (ResultSet result = statement.executeQuery()) {
-
             while (result.next()) {
-
                 locacoes.add(
                     new Locacao(
                         result.getDate("dataInicio").toLocalDate(),

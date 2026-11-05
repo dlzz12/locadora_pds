@@ -10,7 +10,6 @@ import dao.CarroRepositorioBD;
 import model.Carro;
 
 public class PesquisaCarroController {
-
     private Pesquisa_Carro view;
     private CarroRepositorioBD repositorio;
 
@@ -19,18 +18,10 @@ public class PesquisaCarroController {
         this.repositorio = new CarroRepositorioBD();
     }
 
-    // =========================================================
-    // PESQUISAR CARROS
-    // =========================================================
-
     public void pesquisar() {
-
         try {
-
             String termo = view.getTermo();
 
-            // Campo vazio mostra todos os carros disponíveis.
-            // Carros já locados não aparecem na pesquisa.
             List<Carro> carros = termo.isEmpty()
                 ? repositorio.listarDisponiveis()
                 : repositorio.pesquisarDisponiveis(termo);
@@ -38,11 +29,9 @@ public class PesquisaCarroController {
             DefaultTableModel modelo =
                 (DefaultTableModel) view.getTable().getModel();
 
-            // Limpa a tabela antes de carregar novamente
             modelo.setRowCount(0);
 
             for (Carro carro : carros) {
-
                 modelo.addRow(
                     new Object[] {
                         carro.getRenavam(),
@@ -56,9 +45,7 @@ public class PesquisaCarroController {
             }
 
             view.mostrarTotal(carros.size());
-
         } catch (SQLException e) {
-
             view.mostrarMensagem(
                 "Erro ao pesquisar os carros:\n"
                 + e.getMessage()

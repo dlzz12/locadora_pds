@@ -1,7 +1,6 @@
 package model;
 
 public class Usuario {
-
     private int id;
     private String usuario;
     private String senha;
@@ -39,7 +38,6 @@ public class Usuario {
     }
 
     public String validar() {
-
         if (usuario == null || usuario.trim().isEmpty()) {
             return "Informe o usuário.";
         }

@@ -5,14 +5,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.List;
 
 import View.Locacao_Carro;
 import dao.LocacaoRepositorioBD;
 import model.Locacao;
 
 public class LocacaoController {
-
-    // "uuuu" + STRICT recusa datas que não existem, como 31/02/2026
     private static final DateTimeFormatter FORMATO =
         DateTimeFormatter.ofPattern("dd/MM/uuuu")
             .withResolverStyle(ResolverStyle.STRICT);
@@ -25,14 +24,8 @@ public class LocacaoController {
         this.repositorio = new LocacaoRepositorioBD();
     }
 
-    // =========================================================
-    // LOCAR CARRO
-    // =========================================================
-
     public boolean locar() {
-
         try {
-
             LocalDate inicio = converterData(view.getDataInicio(), "início");
             LocalDate termino = converterData(view.getDataTermino(), "término");
 
@@ -52,15 +45,11 @@ public class LocacaoController {
             );
 
             return true;
-
         } catch (IllegalArgumentException e) {
-
             view.mostrarMensagem(
                 e.getMessage()
             );
-
         } catch (SQLException e) {
-
             view.mostrarMensagem(
                 "Erro ao acessar o banco de dados:\n"
                 + e.getMessage()
@@ -70,12 +59,7 @@ public class LocacaoController {
         return false;
     }
 
-    // =========================================================
-    // CONVERTE O TEXTO DD/MM/AAAA EM DATA
-    // =========================================================
-
     private LocalDate converterData(String texto, String nomeCampo) {
-
         if (texto == null || texto.contains("_") || texto.trim().isEmpty()) {
             throw new IllegalArgumentException(
                 "Preencha a data de " + nomeCampo + " (dd/mm/aaaa)."
@@ -89,6 +73,10 @@ public class LocacaoController {
                 "Data de " + nomeCampo + " inválida: " + texto
             );
         }
+    }
+
+    public static List<String[]> meusCarros(String usuario) throws SQLException {
+        return new LocacaoRepositorioBD().listarDoUsuario(usuario);
     }
 
     public static String formatar(LocalDate data) {

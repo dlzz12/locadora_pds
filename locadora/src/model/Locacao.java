@@ -3,12 +3,10 @@ package model;
 import java.time.LocalDate;
 
 public class Locacao {
-
     private LocalDate dataInicio;
     private LocalDate dataTermino;
     private int renavam;
 
-    // Usuário que locou o carro
     private String usuario;
 
     public Locacao() {
@@ -54,7 +52,6 @@ public class Locacao {
     }
 
     public String validar() {
-
         if (dataInicio == null) {
             return "Informe a data de início.";
         }

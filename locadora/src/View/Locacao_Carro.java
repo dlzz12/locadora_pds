@@ -16,7 +16,6 @@ import controller.LocacaoController;
 import net.miginfocom.swing.MigLayout;
 
 public class Locacao_Carro {
-
     private JDialog dialog;
 
     private JFormattedTextField textDataInicio;
@@ -34,7 +33,6 @@ public class Locacao_Carro {
         String descricaoCarro,
         String usuarioLogado
     ) {
-
         this.renavam = renavam;
         this.descricaoCarro = descricaoCarro;
         this.usuarioLogado = usuarioLogado;
@@ -45,17 +43,13 @@ public class Locacao_Carro {
     }
 
     private void initialize(JFrame telaAnterior) {
-
-        // =========================================================
-        // JANELA
-        // =========================================================
-
-        // Modal: a tela de pesquisa fica bloqueada até fechar esta
         dialog = new JDialog(
             telaAnterior,
             "Locadora de Veículos - Locar Carro",
             true
         );
+
+        dialog.setIconImage(Logo.icone());
 
         dialog.setSize(700, 340);
 
@@ -69,10 +63,6 @@ public class Locacao_Carro {
             new Color(0, 0, 160)
         );
 
-        // =========================================================
-        // LAYOUT
-        // =========================================================
-
         dialog.getContentPane().setLayout(
             new MigLayout(
                 "",
@@ -80,10 +70,6 @@ public class Locacao_Carro {
                 "[50px][35px][45px][45px][55px]"
             )
         );
-
-        // =========================================================
-        // TÍTULO
-        // =========================================================
 
         JLabel lblTitulo =
             new JLabel("Locação de Veículo");
@@ -105,10 +91,6 @@ public class Locacao_Carro {
             "cell 0 0 4 1,align center"
         );
 
-        // =========================================================
-        // CARRO ESCOLHIDO
-        // =========================================================
-
         JLabel lblCarro =
             new JLabel("Carro: " + descricaoCarro);
 
@@ -128,10 +110,6 @@ public class Locacao_Carro {
             lblCarro,
             "cell 0 1 4 1,align center"
         );
-
-        // =========================================================
-        // DATA DE INÍCIO
-        // =========================================================
 
         JLabel lblDataInicio =
             new JLabel("Data de início:");
@@ -156,7 +134,6 @@ public class Locacao_Carro {
         textDataInicio =
             criarCampoData();
 
-        // Começa preenchida com a data de hoje
         textDataInicio.setValue(
             LocacaoController.formatar(LocalDate.now())
         );
@@ -165,10 +142,6 @@ public class Locacao_Carro {
             textDataInicio,
             "cell 1 2 2 1,grow"
         );
-
-        // =========================================================
-        // DATA DE TÉRMINO
-        // =========================================================
 
         JLabel lblDataTermino =
             new JLabel("Data de término:");
@@ -197,10 +170,6 @@ public class Locacao_Carro {
             textDataTermino,
             "cell 1 3 2 1,grow"
         );
-
-        // =========================================================
-        // BOTÃO CANCELAR
-        // =========================================================
 
         JButton btnCancelar =
             new JButton("Cancelar");
@@ -231,10 +200,6 @@ public class Locacao_Carro {
         btnCancelar.addActionListener(
             e -> dialog.dispose()
         );
-
-        // =========================================================
-        // BOTÃO LOCAR
-        // =========================================================
 
         JButton btnLocar =
             new JButton("Locar");
@@ -273,16 +238,10 @@ public class Locacao_Carro {
         dialog.getRootPane().setDefaultButton(btnLocar);
     }
 
-    // =============================================================
-    // CAMPO DE DATA COM MÁSCARA __/__/____
-    // =============================================================
-
     private JFormattedTextField criarCampoData() {
-
         JFormattedTextField campo;
 
         try {
-
             MaskFormatter mascaraData =
                 new MaskFormatter("##/##/####");
 
@@ -292,9 +251,7 @@ public class Locacao_Carro {
                 new JFormattedTextField(
                     mascaraData
                 );
-
         } catch (ParseException e) {
-
             e.printStackTrace();
 
             campo =
@@ -312,17 +269,9 @@ public class Locacao_Carro {
         return campo;
     }
 
-    // =============================================================
-    // GET DIALOG
-    // =============================================================
-
     public JDialog getDialog() {
         return dialog;
     }
-
-    // =============================================================
-    // GETTERS DOS DADOS
-    // =============================================================
 
     public String getDataInicio() {
         return textDataInicio.getText();
@@ -340,14 +289,9 @@ public class Locacao_Carro {
         return usuarioLogado;
     }
 
-    // =============================================================
-    // MOSTRAR MENSAGEM
-    // =============================================================
-
     public void mostrarMensagem(
         String mensagem
     ) {
-
         Dialogo.mostrar(
             dialog,
             mensagem

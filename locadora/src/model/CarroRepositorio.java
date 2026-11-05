@@ -6,11 +6,9 @@ import java.util.List;
 import model.Carro;
 
 public class CarroRepositorio {
-
     private List<Carro> carros = new ArrayList<>();
 
     public void salvar(Carro carro) {
-
         if (carro.validar() != null) {
             throw new IllegalArgumentException(carro.validar());
         }
@@ -23,7 +21,6 @@ public class CarroRepositorio {
     }
 
     public boolean existe(String placa) {
-
         if (placa == null || placa.trim().isEmpty()) {
             return false;
         }
